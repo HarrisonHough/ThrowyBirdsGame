@@ -20,6 +20,7 @@ public class Bird : MonoBehaviour {
         InitializeVariables();
 	}
 
+    //TODO change to coroutine to optimize
     private void FixedUpdate()
     {
         if (birdState == BirdState.Thrown && myRigidbody.velocity.sqrMagnitude <= GameVariables.MinVelocity) {
