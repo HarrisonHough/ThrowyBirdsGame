@@ -8,7 +8,7 @@ public class Bird : MonoBehaviour {
 
     private float delayDestroyTime = 2f;
 
-    private LineRenderer lineRenderer;
+    private TrailRenderer trailRenderer;
     private Rigidbody2D myRigidbody;
     private CircleCollider2D myCollider;
     private AudioSource audioSource;
@@ -34,13 +34,13 @@ public class Bird : MonoBehaviour {
 
     void InitializeVariables()
     {
-        lineRenderer = GetComponent<LineRenderer>();
+        trailRenderer = GetComponent<TrailRenderer>();
         myRigidbody = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<CircleCollider2D>();
         audioSource = GetComponent<AudioSource>();
 
-        lineRenderer.enabled = false;
-        lineRenderer.sortingLayerName = "Foreground";
+        trailRenderer.enabled = false;
+        trailRenderer.sortingLayerName = "Foreground";
 
         myRigidbody.isKinematic = true;
         myCollider.radius = GameVariables.BirdColliderRadiusBig;
@@ -51,7 +51,7 @@ public class Bird : MonoBehaviour {
     public void OnThrow()
     {
         audioSource.Play();
-        lineRenderer.enabled = true;
+        trailRenderer.enabled = true;
         myRigidbody.isKinematic = false;
         myCollider.radius = GameVariables.BirdColliderRadiusNormal;
         birdState = BirdState.Thrown;

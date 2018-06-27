@@ -167,7 +167,7 @@ public class Slingshot : MonoBehaviour {
         birdToThrow.GetComponent<Bird>().OnThrow();
 
         //TODO move to bird if possible
-        birdToThrow.GetComponent<Rigidbody>().velocity = new Vector2(velocity.x, velocity.y) * throwSpeed * distance;
+        birdToThrow.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, velocity.y) * throwSpeed * distance;
 
         if (birdthrown != null)
             birdthrown();

@@ -19,6 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4089423661302026}
+  - component: {fileID: 114681495617321060}
   m_Layer: 0
   m_Name: Slingshot
   m_TagString: Untagged
@@ -114,7 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4575270090957336}
   m_Layer: 0
-  m_Name: Left
+  m_Name: Left Origin
   m_TagString: Untagged
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -129,7 +130,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4294310800125080}
   m_Layer: 0
-  m_Name: Right
+  m_Name: Right Origin
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -217,7 +218,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1456577359531502}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.21, y: 2.42, z: 0}
+  m_LocalPosition: {x: -0.19, y: 4.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4089423661302026}
@@ -276,6 +277,27 @@ Transform:
   m_Father: {fileID: 4089423661302026}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114681495617321060
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1122547644686670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bca81cf09b13f1248ac72c1b5c5475ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slingshotState: 0
+  leftSlingshotOrigin: {fileID: 4575270090957336}
+  rightSlingshotOrigin: {fileID: 4294310800125080}
+  slingshotLineRenderer1: {fileID: 120851411815525620}
+  slingshotLineRenderer2: {fileID: 120570834714023094}
+  trajectoryLineRenderer: {fileID: 120403964779487368}
+  birdToThrow: {fileID: 0}
+  birdWaitPosition: {fileID: 4267335031325970}
+  throwSpeed: 10
+  timeSinceThrown: 0
 --- !u!120 &120403964779487368
 LineRenderer:
   m_ObjectHideFlags: 1
@@ -290,7 +312,7 @@ LineRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 817cb29dbc265b34c90b3ab2fbe40be2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -395,8 +417,8 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -663186241
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
@@ -483,8 +505,8 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -663186241
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
@@ -573,7 +595,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -663186241
   m_SortingLayer: 4
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 8cfc95218d9d6ed409be55ff9baf9fa2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

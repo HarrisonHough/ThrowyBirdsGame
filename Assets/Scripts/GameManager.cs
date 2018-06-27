@@ -24,6 +24,10 @@ public class GameManager : MonoBehaviour {
         gamestate = GameState.Start;
         slingshot.enabled = false;
 
+        slingshot.slingshotLineRenderer1.enabled = false;
+        slingshot.slingshotLineRenderer2.enabled = false;
+
+
         //TODO optimize later
         bricks = new List<GameObject>(GameObject.FindGameObjectsWithTag("Brick"));
         birds = new List<GameObject>(GameObject.FindGameObjectsWithTag("Bird"));
@@ -58,6 +62,10 @@ public class GameManager : MonoBehaviour {
                     && (BricksBirdsPigsStoppedMoving() || Time.time - slingshot.timeSinceThrown > 5f))
                 {
                     slingshot.enabled = false;
+
+                    slingshot.slingshotLineRenderer1.enabled = false;
+                    slingshot.slingshotLineRenderer2.enabled = false;
+
                     AnimateCameraToStartPosition();
                     gamestate = GameState.BirdMovingToSlingshot;
 
@@ -90,6 +98,9 @@ public class GameManager : MonoBehaviour {
 
                 gamestate = GameState.Playing;
                 slingshot.enabled = true;
+
+                slingshot.slingshotLineRenderer1.enabled = true;
+                slingshot.slingshotLineRenderer2.enabled = true;
 
                 slingshot.birdToThrow = birds[currentBirdIndex];
             });
