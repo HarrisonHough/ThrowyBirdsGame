@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2018
+* VERSION: 1.0
+* SCRIPT: Bird Class
+*/
+
+
 public class Bird : MonoBehaviour {
 
     public BirdState birdState { get; set; }
@@ -14,11 +22,18 @@ public class Bird : MonoBehaviour {
     private AudioSource audioSource;
 
     private bool waitingToDestroy = false;
+
+    private GameObject lastThrowTrail;
 	// Use this for initialization
 	void Awake () {
 
         InitializeVariables();
 	}
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        GameManager.Instance.slingshot.StopTrajectorySimulation();
+    }
 
     //TODO change to coroutine to optimize
     private void FixedUpdate()
@@ -56,6 +71,8 @@ public class Bird : MonoBehaviour {
         myCollider.radius = GameVariables.BirdColliderRadiusNormal;
         birdState = BirdState.Thrown;
     }
+
+
 
     IEnumerator DestroyAfterDelay(float delay)
     {

@@ -4,8 +4,17 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2018
+* VERSION: 1.0
+* SCRIPT: Game Manager Class
+*/
+
+
 public class GameManager : MonoBehaviour {
 
+    public static GameManager Instance;
     public CameraFollow cameraFollow;
 
     int currentBirdIndex;
@@ -21,6 +30,9 @@ public class GameManager : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
+        if (Instance == null)
+            Instance = this;
+
         gamestate = GameState.Start;
         slingshot.enabled = false;
 

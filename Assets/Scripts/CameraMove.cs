@@ -2,7 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2018
+* VERSION: 1.0
+* SCRIPT: Camera Move Class
+*/
+
+
 public class CameraMove : MonoBehaviour {
+
+    [SerializeField]
+    private Transform minCamTransform, maxCamTransform;
 
     private float dragSpeed = 0.01f;
     private float timeDragStarted;
@@ -28,8 +39,8 @@ public class CameraMove : MonoBehaviour {
                 float deltaX = (previousPosition.x - input.x) * dragSpeed;
                 float deltaY = (previousPosition.y - input.y) * dragSpeed;
 
-                float newX = Mathf.Clamp(transform.position.x + deltaX, 0, 14f);
-                float newY = Mathf.Clamp(transform.position.y + deltaY, 0, 2.7f);
+                float newX = Mathf.Clamp(transform.position.x + deltaX, minCamTransform.position.x, maxCamTransform.position.x);
+                float newY = Mathf.Clamp(transform.position.y + deltaY, minCamTransform.position.y, maxCamTransform.position.y);
 
                 transform.position = new Vector3(newX, newY, transform.position.z);
 

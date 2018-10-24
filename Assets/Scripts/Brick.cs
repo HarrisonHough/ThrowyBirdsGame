@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2018
+* VERSION: 1.0
+* SCRIPT: Brick Class
+*/
+
+
 public class Brick : MonoBehaviour {
 
     private AudioSource audioSource;
@@ -19,11 +27,18 @@ public class Brick : MonoBehaviour {
         if (target.gameObject.GetComponent<Rigidbody2D>() == null)
             return;
 
+        
+
         float damage = target.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude * 10f;
 
         if (damage > 10)
         {
             audioSource.Play();
+        }
+
+        if (target.gameObject.tag == "Bird")
+        {
+
         }
 
         health -= damage;

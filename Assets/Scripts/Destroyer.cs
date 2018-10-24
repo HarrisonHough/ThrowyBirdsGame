@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2018
+* VERSION: 1.0
+* SCRIPT: Destroyer Class
+*/
+
+
 public class Destroyer : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2018
+* VERSION: 1.0
+* SCRIPT: Slingshot Class
+*/
+
+
 public class Slingshot : MonoBehaviour {
 
     private Vector3 slingshotMiddleVector;
@@ -11,7 +19,7 @@ public class Slingshot : MonoBehaviour {
 
     public Transform leftSlingshotOrigin, rightSlingshotOrigin;
 
-    public LineRenderer slingshotLineRenderer1, slingshotLineRenderer2, trajectoryLineRenderer;
+    public LineRenderer slingshotLineRenderer1, slingshotLineRenderer2, trajectoryLineRenderer, lastThrowTrajectoryLineRenderer;
 
     [HideInInspector]
     public GameObject birdToThrow;
@@ -26,8 +34,13 @@ public class Slingshot : MonoBehaviour {
     public delegate void BirdThrown();
     public event BirdThrown birdthrown;
 
+    [SerializeField]
+    private TrajectorySimulation2D trajectorySim;
+
 
     void Awake() {
+
+        lastThrowTrajectoryLineRenderer.enabled = false;
         slingshotLineRenderer1.sortingLayerName = "Foreground";
         slingshotLineRenderer2.sortingLayerName = "Foreground";
         trajectoryLineRenderer.sortingLayerName = "Foreground";
@@ -58,14 +71,17 @@ public class Slingshot : MonoBehaviour {
                     {
                         slingshotState = SlingshotState.UserPulling;
                     }
+                    
                 }
                 break;
             case SlingshotState.UserPulling:
 
                 DisplaySlingShotLineRenderers();
-
+                
                 if (Input.GetMouseButton(0))
                 {
+                    //trajectorySim.EnableAndCalculateTrajectory(birdToThrow.transform.position, slingshotMiddleVector - birdToThrow.transform.position, 100 * throwSpeed * Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position));
+                    
                     Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     location.z = 0;
 
@@ -78,15 +94,18 @@ public class Slingshot : MonoBehaviour {
                     {
                         birdToThrow.transform.position = location;
                     }
-                    var distance = Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position);
-                    DisplayTrajectoryLineRenderer(distance);
+                    //var distance = Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position);
+                    //DisplayTrajectoryLineRenderer(distance);
                 }
                 else //No Tap
                 {
-                    SetTrajectoryLineRendererActive(true);
+
+                    //SetTrajectoryLineRendererActive(true);
+                   
                     timeSinceThrown = Time.time;
 
                     float distance = Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position);
+                    
                     if (distance > 1)
                     {
                         SetSlingshotLineRenderer(false);
@@ -127,14 +146,14 @@ public class Slingshot : MonoBehaviour {
 
     }
 
-    void SetTrajectoryLineRendererActive(bool active)
+    public void SetTrajectoryLineRendererActive(bool active)
     {
         trajectoryLineRenderer.enabled = active;
     }
 
-    void DisplayTrajectoryLineRenderer(float distance)
+    void CalculateTrajectoryLineRenderer(float distance)
     {
-        SetTrajectoryLineRendererActive(true);
+        //SetTrajectoryLineRendererActive(true);
 
         Vector3 v = slingshotMiddleVector - birdToThrow.transform.position;
         int segmentCount = 25;
@@ -154,16 +173,24 @@ public class Slingshot : MonoBehaviour {
         //CHECK
         //trajectoryLineRenderer.SetVertexCount( segmentCount);
         trajectoryLineRenderer.positionCount = segmentCount;
+        
         for (int i = 0; i < segmentCount; i++)
         {
             trajectoryLineRenderer.SetPosition(i, segments[i]);
         }
+        //SetTrajectoryLineRendererActive(false);
     }
 
     private void ThrowBird(float distance)
     {
-        Vector3 velocity = slingshotMiddleVector - birdToThrow.transform.position;
+        //CalculateTrajectoryLineRenderer(distance);
+        SetTrajectoryLineRendererActive(true);
+        SetLastThrowTrajectoryActive(false);
 
+        trajectorySim.EnableAndCalculateTrajectory(birdToThrow.transform.position, slingshotMiddleVector - birdToThrow.transform.position, 50 * throwSpeed * Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position));
+        
+        Vector3 velocity = slingshotMiddleVector - birdToThrow.transform.position;
+        
         birdToThrow.GetComponent<Bird>().OnThrow();
 
         //TODO move to bird if possible
@@ -173,5 +200,16 @@ public class Slingshot : MonoBehaviour {
             birdthrown();
     }
 
+    public void StopTrajectorySimulation()
+    {
+        Debug.Log("Stop trajactory sim");
+        trajectorySim.DisableSimulation();
+    }
 
+    public void SetLastThrowTrajectoryActive(bool active)
+    {
+        lastThrowTrajectoryLineRenderer.enabled = active;
+    }
+
+    
 }
