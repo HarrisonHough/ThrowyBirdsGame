@@ -2,83 +2,87 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-* AUTHOR: Harrison Hough   
-* COPYRIGHT: Harrison Hough 2018
-* VERSION: 1.0
-* SCRIPT: Bird Class
-*/
+public class Bird : MonoBehaviour
+{
+    private Rigidbody2D rigidbody2D;
+    private CircleCollider2D circleCollider2D;
+    public LayerMask birdLayer;
+    private float mass;
+    public float Mass { get { return mass; } }
 
+    [SerializeField]
+    private float disableDelay = 3f;
+    private bool hasHitGround = false;
 
-public class Bird : MonoBehaviour {
+    PhysicsMaterial2D birdMaterial;
 
-    public BirdState birdState { get; set; }
+    // Start is called before the first frame update
+    void Start()
+    {
+        rigidbody2D = GetComponent<Rigidbody2D>();
+        
+    }
 
-    private float delayDestroyTime = 2f;
-
-    private TrailRenderer trailRenderer;
-    private Rigidbody2D myRigidbody;
-    private CircleCollider2D myCollider;
-    private AudioSource audioSource;
-
-    private bool waitingToDestroy = false;
-
-    private GameObject lastThrowTrail;
-	// Use this for initialization
-	void Awake () {
-
-        InitializeVariables();
-	}
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        GameManager.Instance.slingshot.StopTrajectorySimulation();
-    }
-
-    //TODO change to coroutine to optimize
-    private void FixedUpdate()
-    {
-        if (birdState == BirdState.Thrown && myRigidbody.velocity.sqrMagnitude <= GameVariables.MinVelocity) {
-            if (!waitingToDestroy)
-            {
-                waitingToDestroy = true;
-                StartCoroutine(DestroyAfterDelay(delayDestroyTime));
-            }
+        if (collision.gameObject.tag.Contains("Ground") && !hasHitGround)
+        {
+            hasHitGround = true;
+            StartCoroutine(DisableAfterDelay());
         }
     }
 
-    void InitializeVariables()
+    public bool IsCursorOverBird(Vector3 location)
     {
-        trailRenderer = GetComponent<TrailRenderer>();
-        myRigidbody = GetComponent<Rigidbody2D>();
-        myCollider = GetComponent<CircleCollider2D>();
-        audioSource = GetComponent<AudioSource>();
-
-        trailRenderer.enabled = false;
-        trailRenderer.sortingLayerName = "Foreground";
-
-        myRigidbody.isKinematic = true;
-        myCollider.radius = GameVariables.BirdColliderRadiusBig;
-
-        birdState = BirdState.BeforeThrown;
+        if (circleCollider2D == Physics2D.OverlapPoint(location, birdLayer))
+        {
+            Debug.Log("TRUE");
+            return true;
+        }
+        Debug.Log("FALSE");
+        return false; 
     }
 
-    public void OnThrow()
+    public void OnThrow(Vector2 velocity)
     {
-        audioSource.Play();
-        trailRenderer.enabled = true;
-        myRigidbody.isKinematic = false;
-        myCollider.radius = GameVariables.BirdColliderRadiusNormal;
-        birdState = BirdState.Thrown;
+        rigidbody2D.isKinematic = false;
+
+        rigidbody2D.velocity = velocity;
     }
 
-
-
-    IEnumerator DestroyAfterDelay(float delay)
+    IEnumerator DisableAfterDelay()
     {
-        yield return new WaitForSeconds(delay);
-        Destroy(gameObject);
+        while (rigidbody2D.velocity.y != 0)
+        {
+            yield return null;
+        }
+
+        float timeToDisable = Time.time + 2;
+        while(timeToDisable > Time.time)
+        {
+            yield return null;
+        }
+
+        Vector3 startVelocity = rigidbody2D.velocity;
+        //wait until velocity is slow
+        while (Mathf.Abs( rigidbody2D.velocity.x) > 0.5 )
+        {
+            Debug.Log("Waiting to slow down");
+            rigidbody2D.velocity = rigidbody2D.velocity * 0.95f * Time.deltaTime;
+            yield return null;
+        }
+        //wait few seconds
+        timeToDisable = Time.time + disableDelay;
+        Debug.Log("now wait " + timeToDisable + " seconds");
+        while (timeToDisable > Time.time)
+        {
+            yield return null;
+        }
+
+        //TODO notify GameManager
+        GameManager.Instance.DestroyBird();
+        //disable
+        gameObject.SetActive(false);
     }
-
-
 }

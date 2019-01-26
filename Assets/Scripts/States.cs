@@ -2,31 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-* AUTHOR: Harrison Hough   
-* COPYRIGHT: Harrison Hough 2018
-* VERSION: 1.0
-* SCRIPT: States Class Class (Enums)
-*/
 
+    //public enum GameState { InMenu, ReadyForThrow, Throw, Scoring, Finished }
 
-public enum SlingshotState {
-    Idle,
-    UserPulling,
-    BirdFlying
-}
+    public enum SlingshotState
+    {
+        Idle,
+        UserPulling,
+        BirdFlying,
+        Reloading
+    }
 
-public enum GameState
-{
-    Start,
-    BirdMovingToSlingshot,
-    Playing,
-    Won,
-    Lost
-}
+    public enum GameState
+    {
+        InMenu,
+        InGame,
+        GameOver
+    }
 
-public enum BirdState {
-    BeforeThrown,
-    Thrown
-}
+    public enum BirdState
+    {
+        Idle,
+        Ready,
+        Thrown
+    }
 

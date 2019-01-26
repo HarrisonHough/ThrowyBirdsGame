@@ -1,173 +1,116 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/*
-* AUTHOR: Harrison Hough   
-* COPYRIGHT: Harrison Hough 2018
-* VERSION: 1.0
-* SCRIPT: Game Manager Class
-*/
 
+public class GameManager : GenericSingleton<GameManager> 
+{
+    public GameState CurrentState;
+    private Level currentLevel;
 
-public class GameManager : MonoBehaviour {
+    private int birdsDestroyed;
+    private int enemiesKilled;
 
-    public static GameManager Instance;
-    public CameraFollow cameraFollow;
+    private bool levelComplete = false;
 
-    int currentBirdIndex;
+    [SerializeField]
+    private UIControl uiControl;
 
-    public Slingshot slingshot;
-
-    [HideInInspector]
-    public static GameState gamestate;
-
-    private List<GameObject> bricks;
-    private List<GameObject> birds;
-    private List<GameObject> pigs;
-
-    // Use this for initialization
-    void Awake () {
-        if (Instance == null)
-            Instance = this;
-
-        gamestate = GameState.Start;
-        slingshot.enabled = false;
-
-        slingshot.slingshotLineRenderer1.enabled = false;
-        slingshot.slingshotLineRenderer2.enabled = false;
-
-
-        //TODO optimize later
-        bricks = new List<GameObject>(GameObject.FindGameObjectsWithTag("Brick"));
-        birds = new List<GameObject>(GameObject.FindGameObjectsWithTag("Bird"));
-        pigs = new List<GameObject>(GameObject.FindGameObjectsWithTag("Pig"));
-    }
-
-    void OnEnable()
+    // Start is called before the first frame update
+    void Start()
     {
-        //TODO double check for bugs
-        slingshot.birdthrown += SlingshotBirdThrown;
+        //Reset();
     }
 
-    private void OnDisable()
+    public void OnLevelStart(Level level)
     {
-        //TODO double check for bugs
-        slingshot.birdthrown -= SlingshotBirdThrown;
+        currentLevel = level;
+       
+        Reset();
     }
 
-    // Update is called once per frame
-    void Update () {
-        switch (gamestate)
+    private void Reset()
+    {
+        birdsDestroyed = 0;
+        enemiesKilled = 0;
+        levelComplete = false;
+        StartCoroutine(GameLoop());
+    }
+
+
+    public void DestroyBird()
+    {
+        birdsDestroyed++;
+    }
+
+    public void KillEnemy()
+    {
+        enemiesKilled++;
+    }
+
+    IEnumerator GameLoop()
+    {
+        CurrentState = GameState.InGame;
+
+        yield return GameRoutine();
+        if (!levelComplete)
         {
-            case GameState.Start:
-                if (Input.GetMouseButtonUp(0))
-                {
-                    AnimateBirdToSlingshot();
-                }
-                break;
-            case GameState.Playing:
-                //TODO Simplify if possible
-                if (slingshot.slingshotState == SlingshotState.BirdFlying 
-                    && (BricksBirdsPigsStoppedMoving() || Time.time - slingshot.timeSinceThrown > 5f))
-                {
-                    slingshot.enabled = false;
-
-                    slingshot.slingshotLineRenderer1.enabled = false;
-                    slingshot.slingshotLineRenderer2.enabled = false;
-
-                    AnimateCameraToStartPosition();
-                    gamestate = GameState.BirdMovingToSlingshot;
-
-                }
-                break;
-            case GameState.Won:
-            case GameState.Lost:
-                if (Input.GetMouseButtonDown(0))
-                {
-                    //TODO cleanup / upgrade
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                    //Application.LoadLevel(Application.loadedLevelName);
-                }
-                break;
-
+            yield return LevelFailedRoutine();
         }
-	}
-
-    void AnimateBirdToSlingshot()
-    {
-        gamestate = GameState.BirdMovingToSlingshot;
-
-        //TODO clean this up
-        birds[currentBirdIndex].transform.positionTo(
-            Vector2.Distance(birds[currentBirdIndex].transform.position / 10,
-            slingshot.birdWaitPosition.position) / 10, slingshot.birdWaitPosition.position).
-            setOnCompleteHandler((x)=> {
-                x.complete();
-                x.destroy();
-
-                gamestate = GameState.Playing;
-                slingshot.enabled = true;
-
-                slingshot.slingshotLineRenderer1.enabled = true;
-                slingshot.slingshotLineRenderer2.enabled = true;
-
-                slingshot.birdToThrow = birds[currentBirdIndex];
-            });
-    }
-
-    bool BricksBirdsPigsStoppedMoving()
-    {
-        //TODO clean up this mess
-        foreach (var item in bricks.Union(birds).Union(pigs))
+        else
         {
-            if (item != null && item.GetComponent<Rigidbody2D>().velocity.sqrMagnitude > GameVariables.MinVelocity) {
-                return false;
-            } 
+            yield return LevelCompleteRoutine();
         }
-        return true;
+
     }
 
-    private bool AllPigsAreDestroyed()
+    IEnumerator GameRoutine()
     {
-        //TODO Clean up
-        return pigs.All(x => x == null);
+        while (birdsDestroyed < currentLevel.Birds.Length && enemiesKilled < currentLevel.Enemies.Length)
+        {
+            yield return null;
+        }
+
+        if (enemiesKilled == currentLevel.Enemies.Length)
+        {
+            //level complete
+            levelComplete = true;
+        }
+
+        CurrentState = GameState.GameOver;
     }
 
-    private void AnimateCameraToStartPosition()
+    IEnumerator LevelFailedRoutine()
     {
-        float duration = Vector2.Distance(Camera.main.transform.position, cameraFollow.startingPosition) / 10f;
-        if (duration == 0.0f)
-            duration = 0.1f;
-
-        //TODO Cleanup
-        Camera.main.transform.positionTo(duration, 
-            cameraFollow.startingPosition).setOnBeginHandler((x) => 
-            {
-                cameraFollow.isFollowing = false;
-                if (AllPigsAreDestroyed())
-                {
-                    gamestate = GameState.Won;
-                }
-                else if (currentBirdIndex == birds.Count - 1)
-                {
-                    gamestate = GameState.Lost;
-                }
-                else
-                {
-                    slingshot.slingshotState = SlingshotState.Idle;
-                    currentBirdIndex++;
-                    AnimateBirdToSlingshot();
-                }
-            }
-            );
+        //show gameOver UI
+        uiControl.ToggleLevelFailed(true);
+        yield return null;
     }
 
-    private void SlingshotBirdThrown()
+    IEnumerator LevelCompleteRoutine()
     {
-        cameraFollow.birdToFollow = birds[currentBirdIndex].transform;
-        cameraFollow.isFollowing = true;
+        //show gameOver UI
+        uiControl.ToggleLevelComplete(true);
+        yield return null;
+    }
+
+    public void ReloadCurrentScene()
+    {
+        LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void LoadNextScene()
+    {
+        LoadScene(SceneManager.GetActiveScene().buildIndex+1);
+    }
+    public void LoadScene(int index)
+    {
+        SceneManager.LoadScene(index);
+    }
+
+    public void LoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
     }
 }

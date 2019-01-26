@@ -2,53 +2,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-* AUTHOR: Harrison Hough   
-* COPYRIGHT: Harrison Hough 2018
-* VERSION: 1.0
-* SCRIPT: Brick Class
-*/
-
-
-public class Brick : MonoBehaviour {
-
-    private AudioSource audioSource;
-
+public class Brick : MonoBehaviour
+{
     [SerializeField]
     private float health = 70f;
 
-    private void Awake()
+    private float damageMultiplier = 10f;
+
+    // Start is called before the first frame update
+    void Start()
     {
-        audioSource = GetComponent<AudioSource>();
+        
     }
 
-    private void OnCollisionEnter2D(Collision2D target)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (target.gameObject.GetComponent<Rigidbody2D>() == null)
+        if (collision.gameObject.GetComponent<Rigidbody2D>() == null)
             return;
 
-        
+        HandleCollision(collision.gameObject);
+    }
 
-        float damage = target.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude * 10f;
+    private void HandleCollision(GameObject target)
+    {
+        float damage = target.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude * damageMultiplier;
 
-        if (damage > 10)
+        if (damage > 20)
         {
-            audioSource.Play();
-        }
-
-        if (target.gameObject.tag == "Bird")
-        {
-
+            //audioSource.Play();
+            Debug.Log("High Damage!");
         }
 
         health -= damage;
 
         if (health <= 0)
         {
-            Destroy(gameObject);
+            //TODO possibly change
+            gameObject.SetActive(false);
         }
-
+            
     }
-
 
 }

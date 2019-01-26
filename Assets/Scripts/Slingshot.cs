@@ -1,215 +1,133 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
-/*
-* AUTHOR: Harrison Hough   
-* COPYRIGHT: Harrison Hough 2018
-* VERSION: 1.0
-* SCRIPT: Slingshot Class
-*/
-
-
-public class Slingshot : MonoBehaviour {
-
-    private Vector3 slingshotMiddleVector;
-
-    [HideInInspector]
-    public SlingshotState slingshotState;
-
-    public Transform leftSlingshotOrigin, rightSlingshotOrigin;
-
-    public LineRenderer slingshotLineRenderer1, slingshotLineRenderer2, trajectoryLineRenderer, lastThrowTrajectoryLineRenderer;
-
-    [HideInInspector]
-    public GameObject birdToThrow;
-
-    public Transform birdWaitPosition;
-
-    public float throwSpeed;
-
-    [HideInInspector]
-    public float timeSinceThrown;
-
-    public delegate void BirdThrown();
-    public event BirdThrown birdthrown;
+public class Slingshot : MonoBehaviour
+{
+    [SerializeField]
+    private Bird birdToThrow;
+    public Bird BirdToThrow { get { return birdToThrow; } }
 
     [SerializeField]
-    private TrajectorySimulation2D trajectorySim;
+    private Transform launchPoint;
 
+    public float throwForce;
+    private SlingshotState state;
 
-    void Awake() {
+    [SerializeField]
+    private float dragThreshold = 1.5f;
 
-        lastThrowTrajectoryLineRenderer.enabled = false;
-        slingshotLineRenderer1.sortingLayerName = "Foreground";
-        slingshotLineRenderer2.sortingLayerName = "Foreground";
-        trajectoryLineRenderer.sortingLayerName = "Foreground";
+    private int birdArrayIndex = 0;
 
-        slingshotState = SlingshotState.Idle;
-        slingshotLineRenderer1.SetPosition(0, leftSlingshotOrigin.position);
-        slingshotLineRenderer2.SetPosition(0, rightSlingshotOrigin.position);
+    [SerializeField]
+    private Level level;
 
-        slingshotMiddleVector = new Vector3((leftSlingshotOrigin.position.x + rightSlingshotOrigin.position.x) / 2, (leftSlingshotOrigin.position.y + rightSlingshotOrigin.position.y) / 2, 0);
-    }
-
-    // Update is called once per frame
-    void Update() {
-        switch (slingshotState)
-        {
-            case SlingshotState.Idle:
-
-                InitializeBird();
-
-                DisplaySlingShotLineRenderers();
-
-                //TODO fix for performance
-                if (Input.GetMouseButton(0))
-                {
-                    Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-                    if (birdToThrow.GetComponent<CircleCollider2D>() == Physics2D.OverlapPoint(location))
-                    {
-                        slingshotState = SlingshotState.UserPulling;
-                    }
-                    
-                }
-                break;
-            case SlingshotState.UserPulling:
-
-                DisplaySlingShotLineRenderers();
-                
-                if (Input.GetMouseButton(0))
-                {
-                    //trajectorySim.EnableAndCalculateTrajectory(birdToThrow.transform.position, slingshotMiddleVector - birdToThrow.transform.position, 100 * throwSpeed * Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position));
-                    
-                    Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    location.z = 0;
-
-                    if (Vector3.Distance(location, slingshotMiddleVector) > 1.5f)
-                    {
-                        var maxPosition = (location - slingshotMiddleVector).normalized * 1.5f + slingshotMiddleVector;
-                        birdToThrow.transform.position = maxPosition;
-                    }
-                    else
-                    {
-                        birdToThrow.transform.position = location;
-                    }
-                    //var distance = Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position);
-                    //DisplayTrajectoryLineRenderer(distance);
-                }
-                else //No Tap
-                {
-
-                    //SetTrajectoryLineRendererActive(true);
-                   
-                    timeSinceThrown = Time.time;
-
-                    float distance = Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position);
-                    
-                    if (distance > 1)
-                    {
-                        SetSlingshotLineRenderer(false);
-                        slingshotState = SlingshotState.BirdFlying;
-
-                        ThrowBird(distance);
-                    }
-                    else
-                    {
-                        birdToThrow.transform.positionTo(distance / 10, birdWaitPosition.position);
-                        InitializeBird();
-                    }
-
-
-                }
-                break;
-
-        }
-    }
-
-    private void InitializeBird()
-    {
-        birdToThrow.transform.position = birdWaitPosition.position;
-        slingshotState = SlingshotState.Idle;
-        SetSlingshotLineRenderer(true);
-    }
-
-    void SetSlingshotLineRenderer(bool active)
-    {
-        slingshotLineRenderer1.enabled = active;
-        slingshotLineRenderer2.enabled = active;
-    }
-
-    void DisplaySlingShotLineRenderers()
-    {
-        slingshotLineRenderer1.SetPosition(1, birdToThrow.transform.position);
-        slingshotLineRenderer2.SetPosition(1, birdToThrow.transform.position);
-
-    }
-
-    public void SetTrajectoryLineRendererActive(bool active)
-    {
-        trajectoryLineRenderer.enabled = active;
-    }
-
-    void CalculateTrajectoryLineRenderer(float distance)
-    {
-        //SetTrajectoryLineRendererActive(true);
-
-        Vector3 v = slingshotMiddleVector - birdToThrow.transform.position;
-        int segmentCount = 25;
-
-        Vector2[] segments = new Vector2[segmentCount];
-
-        segments[0] = birdToThrow.transform.position;
-
-        Vector2 segVelocity = new Vector2(v.x, v.y) * throwSpeed * distance;
-
-        for (int i = 1; i < segmentCount; i++)
-        {
-            float time = i * Time.fixedDeltaTime * 5f;
-            segments[i] = segments[0] + segVelocity * time + 0.5f * Physics2D.gravity * Mathf.Pow(time, 2);
-        }
-
-        //CHECK
-        //trajectoryLineRenderer.SetVertexCount( segmentCount);
-        trajectoryLineRenderer.positionCount = segmentCount;
-        
-        for (int i = 0; i < segmentCount; i++)
-        {
-            trajectoryLineRenderer.SetPosition(i, segments[i]);
-        }
-        //SetTrajectoryLineRendererActive(false);
-    }
-
-    private void ThrowBird(float distance)
-    {
-        //CalculateTrajectoryLineRenderer(distance);
-        SetTrajectoryLineRendererActive(true);
-        SetLastThrowTrajectoryActive(false);
-
-        trajectorySim.EnableAndCalculateTrajectory(birdToThrow.transform.position, slingshotMiddleVector - birdToThrow.transform.position, 50 * throwSpeed * Vector3.Distance(slingshotMiddleVector, birdToThrow.transform.position));
-        
-        Vector3 velocity = slingshotMiddleVector - birdToThrow.transform.position;
-        
-        birdToThrow.GetComponent<Bird>().OnThrow();
-
-        //TODO move to bird if possible
-        birdToThrow.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, velocity.y) * throwSpeed * distance;
-
-        if (birdthrown != null)
-            birdthrown();
-    }
-
-    public void StopTrajectorySimulation()
-    {
-        Debug.Log("Stop trajactory sim");
-        trajectorySim.DisableSimulation();
-    }
-
-    public void SetLastThrowTrajectoryActive(bool active)
-    {
-        lastThrowTrajectoryLineRenderer.enabled = active;
-    }
-
+    [SerializeField]
+    private float reloadTime = 2f;
     
+    // Start is called before the first frame update
+    void Start()
+    {
+        if (level == null)
+        {
+            level = FindObjectOfType<Level>();
+        }
+        state = SlingshotState.Idle;
+        
+        //TODO possibly move somewhere better
+        birdToThrow = level.Birds[birdArrayIndex];
+    }
+
+    public void OnMouseDown()
+    {
+        if (state == SlingshotState.Idle)
+            state = SlingshotState.UserPulling;
+    }
+
+    public void OnMouseHold(Vector3 mousePosition)
+    {
+        if(state == SlingshotState.UserPulling)
+            PullBack(mousePosition);
+    }
+
+    public void OnMouseRelease(Vector3 mousePosition)
+    {
+        if (state != SlingshotState.UserPulling)
+            return;
+        float distance = Vector3.Distance(launchPoint.position, birdToThrow.transform.position);
+        if (distance > dragThreshold)
+        {
+            ThrowBird(distance);
+            state = SlingshotState.BirdFlying;
+            GetNextBird();
+        }
+        else
+        {
+            //cancel throw
+            //TODO Move Back to position
+            birdToThrow.transform.position = launchPoint.position;
+            state = SlingshotState.Idle;
+            return;
+        }
+        
+    }
+
+    public void ThrowBird(float distance)
+    {
+        Vector3 velocity = launchPoint.position - birdToThrow.transform.position;
+        Vector2 throwVelocity = new Vector2(velocity.x, velocity.y) * throwForce * distance;
+
+        birdToThrow.OnThrow(throwVelocity);
+
+
+        //if (birdThrown != null)
+            //birdThrown();
+    }
+
+
+    public void PullBack(Vector3 mousePosition)
+    {
+        Vector3 position = mousePosition;
+        position.z = 0;
+
+        if (Vector3.Distance(position, launchPoint.position) > 1.5f)
+        {
+            Vector3 maxPosition = (position - launchPoint.position).normalized * 1.5f + launchPoint.position;
+            birdToThrow.transform.position = maxPosition;
+        }
+        else
+        {
+            birdToThrow.transform.position = position;
+        }
+    }
+
+    private void GetNextBird()
+    {
+        birdArrayIndex++;
+        if (birdArrayIndex >= level.Birds.Length)
+        {
+            //no more birds
+            //game over (wait for score)
+            return;
+        }
+        //assign next bird
+        birdToThrow = level.Birds[birdArrayIndex];
+        state = SlingshotState.Reloading;
+
+        StartCoroutine(ReloadRoutine());
+    }
+
+    IEnumerator ReloadRoutine()
+    {
+        birdToThrow.transform.DOMove(launchPoint.transform.position, reloadTime);
+        float timeToWait = Time.time + reloadTime;
+        while (timeToWait > Time.time)
+        {
+            yield return null;
+        }
+        state = SlingshotState.Idle;
+
+        
+    }
 }
