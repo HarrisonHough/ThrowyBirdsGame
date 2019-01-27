@@ -16,6 +16,8 @@ public class Bird : MonoBehaviour
 
     PhysicsMaterial2D birdMaterial;
 
+    private GameObject trail;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +28,17 @@ public class Bird : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+       
+        if (collision.gameObject.tag.Contains("Ground") || collision.gameObject.tag.Contains("Brick") || collision.gameObject.tag.Contains("Pig"))
+        {
+            //before disable unparent trailrenderer
+            if (trail != null)
+            {
+                trail.transform.parent = null;
+                trail = null;
+            }
+        }
+
         if (collision.gameObject.tag.Contains("Ground") && !hasHitGround)
         {
             hasHitGround = true;
@@ -44,11 +57,20 @@ public class Bird : MonoBehaviour
         return false; 
     }
 
-    public void OnThrow(Vector2 velocity)
+    public void OnThrow(Vector2 velocity, GameObject newtrail)
     {
         rigidbody2D.isKinematic = false;
 
         rigidbody2D.velocity = velocity;
+
+        trail = newtrail;
+        trail.transform.position = transform.position;
+        trail.transform.parent = transform;
+        TrailRenderer thisTrail = trail.GetComponent<TrailRenderer>();
+        thisTrail.Clear();
+        thisTrail.enabled = true;
+        
+
     }
 
     IEnumerator DisableAfterDelay()
@@ -82,6 +104,9 @@ public class Bird : MonoBehaviour
 
         //TODO notify GameManager
         GameManager.Instance.DestroyBird();
+
+        
+        
         //disable
         gameObject.SetActive(false);
     }

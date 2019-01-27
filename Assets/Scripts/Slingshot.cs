@@ -25,6 +25,10 @@ public class Slingshot : MonoBehaviour
 
     [SerializeField]
     private float reloadTime = 2f;
+
+    [SerializeField]
+    private GameObject[] trailrenderers;
+    private int currentTrail = 0;
     
     // Start is called before the first frame update
     void Start()
@@ -78,11 +82,26 @@ public class Slingshot : MonoBehaviour
         Vector3 velocity = launchPoint.position - birdToThrow.transform.position;
         Vector2 throwVelocity = new Vector2(velocity.x, velocity.y) * throwForce * distance;
 
-        birdToThrow.OnThrow(throwVelocity);
+        //clear all trails on through
+        HideAllTrails();
+        birdToThrow.OnThrow(throwVelocity,trailrenderers[currentTrail]);
 
+        currentTrail++;
+        if (currentTrail >= trailrenderers.Length)
+        {
+            currentTrail = 0;
+        }
 
         //if (birdThrown != null)
             //birdThrown();
+    }
+
+    private void HideAllTrails()
+    {
+        for (int i = 0; i < trailrenderers.Length; i++)
+        {
+            trailrenderers[i].GetComponent<TrailRenderer>().Clear();
+        }
     }
 
 
