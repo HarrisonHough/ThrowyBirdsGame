@@ -9,8 +9,10 @@ using UnityEngine;
 * SCRIPT: Generic Singleton Class 
 */
 
-
-
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class GenericSingleton<T> : MonoBehaviour where T : Component
 {
         

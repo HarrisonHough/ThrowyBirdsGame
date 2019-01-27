@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2019
+* VERSION: 1.0
+* SCRIPT: Bird Class
+*/
+
+/// <summary>
+/// 
+/// </summary>
 public class Bird : MonoBehaviour
 {
     private Rigidbody2D rigidbody2D;
@@ -16,14 +26,20 @@ public class Bird : MonoBehaviour
 
     PhysicsMaterial2D birdMaterial;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Start is called before the first frame update
+    /// </summary>
     void Start()
     {
         rigidbody2D = GetComponent<Rigidbody2D>();
         circleCollider2D = GetComponent<CircleCollider2D>();
     }
 
-
+    /// <summary>
+    /// Runs on every collison with this object
+    /// Used to start DisableAfterDelay coroutine
+    /// </summary>
+    /// <param name="collision"></param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag.Contains("Ground") && !hasHitGround)
@@ -33,6 +49,11 @@ public class Bird : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if cursor is currently over this physics object
+    /// </summary>
+    /// <param name="location"></param>
+    /// <returns></returns>
     public bool IsCursorOverBird(Vector3 location)
     {
         if (circleCollider2D == Physics2D.OverlapPoint(location, birdLayer))
@@ -44,6 +65,10 @@ public class Bird : MonoBehaviour
         return false; 
     }
 
+    /// <summary>
+    /// This function enables physics and sets move velocity
+    /// </summary>
+    /// <param name="velocity"></param>
     public void OnThrow(Vector2 velocity)
     {
         rigidbody2D.isKinematic = false;
@@ -51,6 +76,11 @@ public class Bird : MonoBehaviour
         rigidbody2D.velocity = velocity;
     }
 
+    /// <summary>
+    /// This routine slows down and destroys/disables 
+    /// this gameobject after a delay
+    /// </summary>
+    /// <returns></returns>
     IEnumerator DisableAfterDelay()
     {
         while (rigidbody2D.velocity.y != 0)

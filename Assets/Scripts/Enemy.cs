@@ -2,6 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2019
+* VERSION: 1.0
+* SCRIPT: Enemy Class
+*/
+
+
+/// <summary>
+/// 
+/// </summary>
 public struct DamageState
 {
     public Sprite sprite;
@@ -9,32 +20,46 @@ public struct DamageState
 }
 
 
+/// <summary>
+/// 
+/// </summary>
 public class Enemy : MonoBehaviour
 {
+    //adjustable variable for enemy health
     [SerializeField]
     private float health = 150f;
 
+    //References to different damage states
     [SerializeField]
     private DamageState damageState1;
     [SerializeField]
     private DamageState DamageState2;
-    
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Start is called before the first frame update
+    /// </summary>
     void Start()
     {
         
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="collision"></param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //check collision object for rigidbody
         if (collision.gameObject.GetComponent<Rigidbody2D>() == null)
             return;
-        if (collision.gameObject.tag == "Player")
+
+        //check if player
+        if (collision.gameObject.tag == "Bird")
         {
             //play audio
             //destroy/hide object
-            Destroy(gameObject);
+            GameManager.Instance.KillEnemy();
+            gameObject.SetActive(false);
         }
         else
         {
@@ -42,8 +67,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="target"></param>
     private void HandleCollision(GameObject target)
     {
+        //calculate damage
         float damage = target.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude * 10f;
         if (damage >= 10)
         {
@@ -51,15 +81,17 @@ public class Enemy : MonoBehaviour
             //audioSource.Play();
         }
             
-
+        //decrease health
         health -= damage;
 
         //TODO implement damage states
         //if (health < changeSpriteHealth)
             //gameObject.GetComponent<SpriteRenderer>().sprite = spriteShownWhenHurt;
-
+            
+        //check health
         if (health <= 0)
         {
+            //tell GameManeger enemy has died
             GameManager.Instance.KillEnemy();
             gameObject.SetActive(false);
             //Destroy(gameObject);

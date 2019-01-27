@@ -3,9 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-    //public enum GameState { InMenu, ReadyForThrow, Throw, Scoring, Finished }
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2019
+* VERSION: 1.0
+* SCRIPT: States Class
+*/
 
-    public enum SlingshotState
+    /// <summary>
+    /// 
+    /// </summary>
+public enum SlingshotState
     {
         Idle,
         UserPulling,
@@ -13,6 +21,9 @@ using UnityEngine;
         Reloading
     }
 
+/// <summary>
+/// 
+/// </summary>
     public enum GameState
     {
         InMenu,
@@ -20,6 +31,9 @@ using UnityEngine;
         GameOver
     }
 
+/// <summary>
+/// 
+/// </summary>
     public enum BirdState
     {
         Idle,

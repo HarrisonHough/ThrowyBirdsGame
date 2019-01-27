@@ -2,18 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* AUTHOR: Harrison Hough   
+* COPYRIGHT: Harrison Hough 2019
+* VERSION: 1.0
+* SCRIPT: Input Controller Class
+*/
+
+/// <summary>
+/// 
+/// </summary>
 public class InputController : MonoBehaviour
 {
+    //store reference to slingshot
     [SerializeField]
     private Slingshot slingshot;
 
-
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame
+    /// </summary>
     void Update()
     {
         GetInput();
     }
 
+    /// <summary>
+    /// Get user input depending on game state
+    /// </summary>
     void GetInput()
     {
         switch (GameManager.Instance.CurrentState)
@@ -30,6 +45,9 @@ public class InputController : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Handles input for slingshot control
+    /// </summary>
     private void SlingShotControls()
     {
         if (Input.GetMouseButtonDown(0))
@@ -51,6 +69,9 @@ public class InputController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void CameraMovementControls()
     {
         if (Input.touchCount == 1)
