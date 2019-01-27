@@ -44,6 +44,7 @@ public class InputController : MonoBehaviour
             Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             slingshot.OnMouseHold(location);
         }
+
         if (Input.GetMouseButtonUp(0))
         {
             Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
