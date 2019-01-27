@@ -14,9 +14,6 @@ public class GameManager : GenericSingleton<GameManager>
 
     private bool levelComplete = false;
 
-    [SerializeField]
-    private UIControl uiControl;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -84,14 +81,14 @@ public class GameManager : GenericSingleton<GameManager>
     IEnumerator LevelFailedRoutine()
     {
         //show gameOver UI
-        uiControl.ToggleLevelFailed(true);
+        currentLevel.UIControl.ToggleLevelFailed(true);
         yield return null;
     }
 
     IEnumerator LevelCompleteRoutine()
     {
         //show gameOver UI
-        uiControl.ToggleLevelComplete(true);
+        currentLevel.UIControl.ToggleLevelComplete(true);
         yield return null;
     }
 

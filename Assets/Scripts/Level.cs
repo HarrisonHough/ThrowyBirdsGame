@@ -11,6 +11,9 @@ public class Level : MonoBehaviour
     [SerializeField]
     private Enemy[] enemies;
     public Enemy[] Enemies { get { return enemies; } }
+    [SerializeField]
+    private UIControl uiControl;
+    public UIControl UIControl { get { return uiControl; } }
 
 
     // Start is called before the first frame update

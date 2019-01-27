@@ -20,7 +20,7 @@ public class Bird : MonoBehaviour
     void Start()
     {
         rigidbody2D = GetComponent<Rigidbody2D>();
-        
+        circleCollider2D = GetComponent<CircleCollider2D>();
     }
 
 

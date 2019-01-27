@@ -92,9 +92,9 @@ GameObject:
   - component: {fileID: 6951419453834373821}
   - component: {fileID: 3070779678828714000}
   - component: {fileID: 7575211637313583205}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Bird
-  m_TagString: Untagged
+  m_TagString: Bird
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -163,6 +163,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cd9f8d5768891b42b9ff0973e552ed0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  birdLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  disableDelay: 3
 --- !u!96 &7575211637313583205
 TrailRenderer:
   serializedVersion: 2
