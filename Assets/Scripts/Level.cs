@@ -19,18 +19,18 @@ public class Level : MonoBehaviour
 {
     //store reference to birds array
     [SerializeField]
-    private Bird[] birds;
-    public Bird[] Birds { get { return birds; } }
+    private Bird[] _birds;
+    public Bird[] Birds { get { return _birds; } }
 
     //store reference to enemy array
     [SerializeField]
-    private Enemy[] enemies;
-    public Enemy[] Enemies { get { return enemies; } }
+    private Enemy[] _enemies;
+    public Enemy[] Enemies { get { return _enemies; } }
 
     //store reference to UI Control
     [SerializeField]
-    private UIControl uiControl;
-    public UIControl UIControl { get { return uiControl; } }
+    private UIControl _uiControl;
+    public UIControl UIControl { get { return _uiControl; } }
     
     /// <summary>
     /// 

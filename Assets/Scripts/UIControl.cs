@@ -16,11 +16,11 @@ using UnityEngine.UI;
 public class UIControl : MonoBehaviour
 {
     [SerializeField]
-    private GameObject levelFailedPanel;
+    private GameObject _levelFailedPanel;
     [SerializeField]
-    private GameObject levelCompletePanel;
+    private GameObject _levelCompletePanel;
     [SerializeField]
-    private Text finalScore;
+    private Text _finalScore;
 
     /// <summary>
     /// Start is called before the first frame update
@@ -36,7 +36,7 @@ public class UIControl : MonoBehaviour
     /// <param name="score"></param>
     public void SetFinalScore(int score)
     {
-        finalScore.text = score.ToString();
+        _finalScore.text = score.ToString();
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class UIControl : MonoBehaviour
     /// <param name="enable"></param>
     public void ToggleLevelFailed(bool enable)
     {
-        levelFailedPanel.SetActive(enable);
+        _levelFailedPanel.SetActive(enable);
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class UIControl : MonoBehaviour
     /// <param name="enable"></param>
     public void ToggleLevelComplete(bool enable)
     {
-        levelCompletePanel.SetActive(enable);
+        _levelCompletePanel.SetActive(enable);
     }
 
     /// <summary>

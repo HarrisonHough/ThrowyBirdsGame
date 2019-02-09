@@ -16,12 +16,12 @@ using UnityEngine.SceneManagement;
 public class GameManager : GenericSingleton<GameManager> 
 {
     public GameState CurrentState;
-    private Level currentLevel;
+    private Level _currentLevel;
 
-    private int birdsDestroyed;
-    private int enemiesKilled;
+    private int _birdsDestroyed;
+    private int _enemiesKilled;
 
-    private bool levelComplete = false;
+    private bool _levelComplete = false;
 
     /// <summary>
     /// Start is called before the first frame update
@@ -37,7 +37,7 @@ public class GameManager : GenericSingleton<GameManager>
     /// <param name="level"></param>
     public void OnLevelStart(Level level)
     {
-        currentLevel = level;
+        _currentLevel = level;
        
         Reset();
     }
@@ -47,9 +47,9 @@ public class GameManager : GenericSingleton<GameManager>
     /// </summary>
     private void Reset()
     {
-        birdsDestroyed = 0;
-        enemiesKilled = 0;
-        levelComplete = false;
+        _birdsDestroyed = 0;
+        _enemiesKilled = 0;
+        _levelComplete = false;
         StartCoroutine(GameLoop());
     }
 
@@ -58,7 +58,7 @@ public class GameManager : GenericSingleton<GameManager>
     /// </summary>
     public void DestroyBird()
     {
-        birdsDestroyed++;
+        _birdsDestroyed++;
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class GameManager : GenericSingleton<GameManager>
     /// </summary>
     public void KillEnemy()
     {
-        enemiesKilled++;
+        _enemiesKilled++;
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class GameManager : GenericSingleton<GameManager>
         CurrentState = GameState.InGame;
 
         yield return GameRoutine();
-        if (!levelComplete)
+        if (!_levelComplete)
         {
             yield return LevelFailedRoutine();
         }
@@ -95,15 +95,15 @@ public class GameManager : GenericSingleton<GameManager>
     /// <returns></returns>
     IEnumerator GameRoutine()
     {
-        while (birdsDestroyed < currentLevel.Birds.Length && enemiesKilled < currentLevel.Enemies.Length)
+        while (_birdsDestroyed < _currentLevel.Birds.Length && _enemiesKilled < _currentLevel.Enemies.Length)
         {
             yield return null;
         }
 
-        if (enemiesKilled == currentLevel.Enemies.Length)
+        if (_enemiesKilled == _currentLevel.Enemies.Length)
         {
             //level complete
-            levelComplete = true;
+            _levelComplete = true;
         }
 
         CurrentState = GameState.GameOver;
@@ -116,7 +116,7 @@ public class GameManager : GenericSingleton<GameManager>
     IEnumerator LevelFailedRoutine()
     {
         //show gameOver UI
-        currentLevel.UIControl.ToggleLevelFailed(true);
+        _currentLevel.UIControl.ToggleLevelFailed(true);
         yield return null;
     }
 
@@ -127,7 +127,7 @@ public class GameManager : GenericSingleton<GameManager>
     IEnumerator LevelCompleteRoutine()
     {
         //show gameOver UI
-        currentLevel.UIControl.ToggleLevelComplete(true);
+        _currentLevel.UIControl.ToggleLevelComplete(true);
         yield return null;
     }
 

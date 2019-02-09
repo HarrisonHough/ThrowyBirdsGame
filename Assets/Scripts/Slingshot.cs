@@ -14,45 +14,45 @@ public class Slingshot : MonoBehaviour
 {
     //store reference to currently "loaded" bird
     [SerializeField]
-    private Bird birdToThrow;
-    public Bird BirdToThrow { get { return birdToThrow; } }
+    private Bird _birdToThrow;
+    public Bird BirdToThrow { get { return _birdToThrow; } }
 
     //reference to slingshot launch point
     [SerializeField]
-    private Transform launchPoint;
+    private Transform _launchPoint;
 
     //adjustable throw force
     [SerializeField]
-    private float throwForce = 6f;
-    private SlingshotState state;
+    private float _throwForce = 6f;
+    private SlingshotState _state;
 
 
     [SerializeField]
-    private float dragThreshold = 1.5f;
+    private float _dragThreshold = 1.5f;
 
     //used to keep track of current bird in bird array
-    private int birdArrayIndex = 0;
+    private int _birdArrayIndex = 0;
 
     [SerializeField]
-    private Level level;
+    private Level _level;
 
     //time it takes for next bird to be loaded into slingshot
     [SerializeField]
-    private float reloadTime = 2f;
+    private float _reloadTime = 2f;
 
     /// <summary>
     ///  Start is called before the first frame update
     /// </summary>
     void Start()
     {
-        if (level == null)
+        if (_level == null)
         {
-            level = FindObjectOfType<Level>();
+            _level = FindObjectOfType<Level>();
         }
-        state = SlingshotState.Idle;
+        _state = SlingshotState.Idle;
         
         //TODO possibly move somewhere better
-        birdToThrow = level.Birds[birdArrayIndex];
+        _birdToThrow = _level.Birds[_birdArrayIndex];
     }
 
     /// <summary>
@@ -61,8 +61,8 @@ public class Slingshot : MonoBehaviour
     public void OnMouseDown()
     {
         //must be in idle state
-        if (state == SlingshotState.Idle)
-            state = SlingshotState.UserPulling;
+        if (_state == SlingshotState.Idle)
+            _state = SlingshotState.UserPulling;
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class Slingshot : MonoBehaviour
     /// <param name="mousePosition">Takes in mouse position to calculate pullback</param>
     public void OnMouseHold(Vector3 mousePosition)
     {
-        if(state == SlingshotState.UserPulling)
+        if(_state == SlingshotState.UserPulling)
             PullBack(mousePosition);
     }
 
@@ -83,21 +83,21 @@ public class Slingshot : MonoBehaviour
     /// <param name="mousePosition"></param>
     public void OnMouseRelease(Vector3 mousePosition)
     {
-        if (state != SlingshotState.UserPulling)
+        if (_state != SlingshotState.UserPulling)
             return;
-        float distance = Vector3.Distance(launchPoint.position, birdToThrow.transform.position);
-        if (distance > dragThreshold)
+        float distance = Vector3.Distance(_launchPoint.position, _birdToThrow.transform.position);
+        if (distance > _dragThreshold)
         {
             ThrowBird(distance);
-            state = SlingshotState.BirdFlying;
+            _state = SlingshotState.BirdFlying;
             GetNextBird();
         }
         else
         {
             //cancel throw
             //TODO Move Back to position
-            birdToThrow.transform.position = launchPoint.position;
-            state = SlingshotState.Idle;
+            _birdToThrow.transform.position = _launchPoint.position;
+            _state = SlingshotState.Idle;
             return;
         }
         
@@ -111,12 +111,12 @@ public class Slingshot : MonoBehaviour
     public void ThrowBird(float distance)
     {
         //calculate velocity
-        Vector3 velocity = launchPoint.position - birdToThrow.transform.position;
+        Vector3 velocity = _launchPoint.position - _birdToThrow.transform.position;
         //apply multipliers
-        Vector2 throwVelocity = new Vector2(velocity.x, velocity.y) * throwForce * distance;
+        Vector2 throwVelocity = new Vector2(velocity.x, velocity.y) * _throwForce * distance;
 
         //throw bird with calculated velocity
-        birdToThrow.OnThrow(throwVelocity);
+        _birdToThrow.OnThrow(throwVelocity);
     }
 
     /// <summary>
@@ -129,14 +129,14 @@ public class Slingshot : MonoBehaviour
         Vector3 position = mousePosition;
         position.z = 0;
 
-        if (Vector3.Distance(position, launchPoint.position) > 1.5f)
+        if (Vector3.Distance(position, _launchPoint.position) > 1.5f)
         {
-            Vector3 maxPosition = (position - launchPoint.position).normalized * 1.5f + launchPoint.position;
-            birdToThrow.transform.position = maxPosition;
+            Vector3 maxPosition = (position - _launchPoint.position).normalized * 1.5f + _launchPoint.position;
+            _birdToThrow.transform.position = maxPosition;
         }
         else
         {
-            birdToThrow.transform.position = position;
+            _birdToThrow.transform.position = position;
         }
     }
 
@@ -145,17 +145,17 @@ public class Slingshot : MonoBehaviour
     /// </summary>
     private void GetNextBird()
     {
-        birdArrayIndex++;
+        _birdArrayIndex++;
         //check if within array range
-        if (birdArrayIndex >= level.Birds.Length)
+        if (_birdArrayIndex >= _level.Birds.Length)
         {
             //no more birds
             //game over (wait for score)
             return;
         }
         //assign next bird
-        birdToThrow = level.Birds[birdArrayIndex];
-        state = SlingshotState.Reloading;
+        _birdToThrow = _level.Birds[_birdArrayIndex];
+        _state = SlingshotState.Reloading;
 
         //start reload process
         StartCoroutine(ReloadRoutine());
@@ -168,15 +168,15 @@ public class Slingshot : MonoBehaviour
     IEnumerator ReloadRoutine()
     {
         //move using DoTween move
-        birdToThrow.transform.DOMove(launchPoint.transform.position, reloadTime);
+        _birdToThrow.transform.DOMove(_launchPoint.transform.position, _reloadTime);
         //calculate time to wait
-        float timeToWait = Time.time + reloadTime;
+        float timeToWait = Time.time + _reloadTime;
         //wait until time passed
         while (timeToWait > Time.time)
         {
             yield return null;
         }
         //now ready to throw again
-        state = SlingshotState.Idle;
+        _state = SlingshotState.Idle;
     }
 }

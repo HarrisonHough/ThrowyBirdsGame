@@ -16,9 +16,9 @@ using UnityEngine;
 public class GenericSingleton<T> : MonoBehaviour where T : Component
 {
         
-    private static T instance;
+    private static T _instance;
     [SerializeField]
-    private bool destroyOnLoad = false;
+    private bool _destroyOnLoad = false;
 
     //publicly accessible reference to the instance
     public static T Instance
@@ -26,20 +26,20 @@ public class GenericSingleton<T> : MonoBehaviour where T : Component
         get
         {
             //check if an instance already exists
-            if (instance == null)
+            if (_instance == null)
             {
                 //if not create new instance
-                instance = FindObjectOfType<T>();
-                if (instance == null)
+                _instance = FindObjectOfType<T>();
+                if (_instance == null)
                 {
                     GameObject obj = new GameObject();
                     obj.name = typeof(T).Name;
-                    instance = obj.AddComponent<T>();
+                    _instance = obj.AddComponent<T>();
                 }
                 
             }
             //if instance exists return instance
-            return instance;
+            return _instance;
         }
     }
 
@@ -48,15 +48,15 @@ public class GenericSingleton<T> : MonoBehaviour where T : Component
     /// </summary>
     public virtual void Awake()
     {
-        if (instance == null)
+        if (_instance == null)
         {
-            instance = this as T;
-            if (!destroyOnLoad)
+            _instance = this as T;
+            if (!_destroyOnLoad)
             {
                 DontDestroyOnLoad(this.gameObject);
             }
         }
-        else if(instance != this)
+        else if(_instance != this)
         {
             Destroy(gameObject);
         }

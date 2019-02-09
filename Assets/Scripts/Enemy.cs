@@ -27,13 +27,13 @@ public class Enemy : MonoBehaviour
 {
     //adjustable variable for enemy health
     [SerializeField]
-    private float health = 150f;
+    private float _health = 150f;
 
     //References to different damage states
     [SerializeField]
-    private DamageState damageState1;
+    private DamageState _damageState1;
     [SerializeField]
-    private DamageState DamageState2;
+    private DamageState _damageState2;
 
     /// <summary>
     /// Start is called before the first frame update
@@ -82,14 +82,14 @@ public class Enemy : MonoBehaviour
         }
             
         //decrease health
-        health -= damage;
+        _health -= damage;
 
         //TODO implement damage states
         //if (health < changeSpriteHealth)
             //gameObject.GetComponent<SpriteRenderer>().sprite = spriteShownWhenHurt;
             
         //check health
-        if (health <= 0)
+        if (_health <= 0)
         {
             //tell GameManeger enemy has died
             GameManager.Instance.KillEnemy();

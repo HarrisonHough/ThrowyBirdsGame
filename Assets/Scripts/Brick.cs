@@ -15,9 +15,9 @@ using UnityEngine;
 public class Brick : MonoBehaviour
 {
     [SerializeField]
-    private float health = 70f;
+    private float _health = 70f;
 
-    private float damageMultiplier = 10f;
+    private float _damageMultiplier = 10f;
 
     /// <summary>
     /// Start is called before the first frame update
@@ -45,7 +45,7 @@ public class Brick : MonoBehaviour
     /// <param name="target"></param>
     private void HandleCollision(GameObject target)
     {
-        float damage = target.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude * damageMultiplier;
+        float damage = target.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude * _damageMultiplier;
 
         //check for high damage
         if (damage > 20)
@@ -55,10 +55,10 @@ public class Brick : MonoBehaviour
         }
 
         //decrease health
-        health -= damage;
+        _health -= damage;
 
         //check health
-        if (health <= 0)
+        if (_health <= 0)
         {
             //TODO possibly change
             gameObject.SetActive(false);

@@ -16,7 +16,7 @@ public class InputController : MonoBehaviour
 {
     //store reference to slingshot
     [SerializeField]
-    private Slingshot slingshot;
+    private Slingshot _slingshot;
 
     /// <summary>
     /// Update is called once per frame
@@ -53,19 +53,19 @@ public class InputController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (slingshot.BirdToThrow.IsCursorOverBird(location))
-                slingshot.OnMouseDown();
+            if (_slingshot.BirdToThrow.IsCursorOverBird(location))
+                _slingshot.OnMouseDown();
 
         }
         if (Input.GetMouseButton(0))
         {
             Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            slingshot.OnMouseHold(location);
+            _slingshot.OnMouseHold(location);
         }
         if (Input.GetMouseButtonUp(0))
         {
             Vector3 location = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            slingshot.OnMouseRelease(location);
+            _slingshot.OnMouseRelease(location);
         }
     }
 
